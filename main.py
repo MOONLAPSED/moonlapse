@@ -179,6 +179,10 @@ def curry_main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Log
         combined_arguments.extend(arguments)
         combined_misc_args.extend(misc_args)
 
+    non_str_args = [arg for arg in args if not isinstance(arg, str)]
+    if non_str_args:
+        run_main_parallel(non_str_args, test_case_num=kwargs.get('test_case_num', None))
+
     return combined_logger, combined_paths, combined_arguments, combined_misc_args
 def run_main_parallel(args, test_case_num=None):
     """
@@ -223,8 +227,6 @@ if __name__ == '__main__':
     for idx, test_args in enumerate(test_cases, start=1):
         print(f"Testing case {idx}...")
         logger, created_paths, arguments, misc_args = curry_main(*test_args, test_case_num=idx)
-        # print("Logger:", logger)
-        # print("Created paths:", created_paths)
         print("Arguments:", arguments)
         print("Misc Args:", misc_args)
         print()
