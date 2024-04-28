@@ -56,7 +56,11 @@ def _create_paths(*args: str) -> List[Path]:
     return created_paths
 
 def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, List[Path], List[str], List[Any]]:
-    """Configures logging for the app.
+    """
+    Initializes the application/runtime environment.
+
+    This function configures the logging system based on predefined configurations
+    and initializes the application by setting up necessary paths and logging information.
 
     Args:
         *args: Tuple[Any]
@@ -69,8 +73,36 @@ def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, L
             A tuple containing:
                 - logging.Logger: The configured logger instance.
                 - List[Path]: A list of created directory paths.
-                - List[str]: A list of string arguments.
-                - List[Any]: A list of non-string arguments.
+                - List[str]: A list of string arguments passed to the function.
+                - List[Any]: A list of non-string arguments passed to the function.
+
+    Notes:
+        - This function initializes the logging system using predefined configurations
+          stored in the `LOGGING_CONFIG` constant.
+        - It creates necessary directories (vault, templates, output, logs, src) using
+          the `_create_paths` function to ensure required directories exist.
+        - The logger instance created here is used to log key information about the
+          execution environment, such as source file, invocation directory, and working directory.
+        - The function collects and processes command-line arguments (`sys.argv`), converting
+          them into lowercase strings and filtering out empty strings.
+        - Additional arguments (`*args` and `**kwargs`) are processed and categorized into
+          `arguments` (string-based) and `misc_args` (non-string).
+
+    Examples:
+        To initialize the application:
+        ```
+        logger, paths, arguments, misc_args = main()
+        ```
+
+        To pass custom arguments and keyword arguments:
+        ```
+        logger, paths, arguments, misc_args = main("arg1", "arg2", key1="value1", key2=123)
+        ```
+
+    Raises:
+        Exception: If there is an error creating directory paths due to file not found or
+                   permission issues.
+
     """
     current_dir = Path(__file__).resolve().parent
     sys.path.append(str(current_dir))
@@ -107,12 +139,37 @@ def curry_main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Log
     """
     Invoke the main function separately for different types of arguments.
 
+    This function dynamically dispatches the main function for each provided argument,
+    separately handling string arguments by invoking the main function directly, and
+    running non-string arguments in parallel subprocesses.
+
     Args:
         *args: Positional arguments to be passed to the main function.
         **kwargs: Keyword arguments to be passed to the main function.
 
     Returns:
-        Tuple[logging.Logger, List[Path], List[str], List[Any]]: The combined results from all invocations of the main function.
+        Tuple[logging.Logger, List[Path], List[str], List[Any]]: A tuple containing
+        the combined results from all invocations of the main function. The first
+        element is the root logger used by the main function and its subprocesses.
+        The second element is a list of paths created during the execution. The third
+        element is a list of arguments processed by the main function. The fourth
+        element is a list of miscellaneous arguments used during execution.
+
+    Notes:
+        - For string arguments, the main function is invoked directly with the provided
+          arguments and keyword arguments. The results are aggregated into the returned tuple.
+        - For non-string arguments, the main function is run in parallel subprocesses, with
+          each subprocess handling a single argument. The logging configuration of the main
+          process is inherited by the subprocesses, and each subprocess logger is named
+          after the entry point function of the process, typically 'main()'. Log messages
+          from subprocesses may appear with logger names such as 'main' or 'mp_main',
+          depending on the logging configuration and multiprocessing implementation.
+
+    Example:
+        To invoke the main function separately for different argument types:
+        ```
+        logger, created_paths, arguments, misc_args = curry_main("arg1", 2, [3, 4], key1="value1")
+        ```
     """
     combined_logger = None
     combined_paths = []
