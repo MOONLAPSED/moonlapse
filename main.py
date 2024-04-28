@@ -113,7 +113,6 @@ def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, L
     paths = _create_paths("vault", "templates", "output", "logs", "src")
     logger = logging.getLogger(__name__)
     logger.info(f'\n|Source_file: {__file__}||'
-                f'\n|Invocation_dir: {current_dir}||'
                 f'\n|Working_dir: {current_dir}||')
 
     arguments = [str(_).lower().strip() for _ in sys.argv if len(_) > 0]
@@ -137,7 +136,7 @@ def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, L
 
 def curry_main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, List[Path], List[str], List[Any]]:
     """
-    Invoke the main function separately for different types of arguments.
+    Invoke the main function recursively for each argument.
 
     Args:
         *args: Tuple[Any]
@@ -153,39 +152,34 @@ def curry_main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Log
                 - List[str]: A list of string arguments.
                 - List[Any]: A list of non-string arguments.
     """
-    test_case_num = kwargs.get('test_case_num', None)
-
     combined_logger = None
     combined_paths = []
     combined_arguments = []
     combined_misc_args = []
 
-    try:
-        if test_case_num is not None:
-            logging.info(f"Running test case {test_case_num}...")
-        
-        # Separate arguments based on type
-        str_args = [arg for arg in args if isinstance(arg, str)]
-        non_str_args = [arg for arg in args if not isinstance(arg, str)]
+    for arg in args:
+        if isinstance(arg, (tuple, list)):
+            logger, paths, arguments, misc_args = curry_main(*arg, **kwargs)
+        else:
+            logger, paths, arguments, misc_args = main(arg, **kwargs)
 
-        # Run main() for string arguments
-        if str_args:
-            logger, paths, arguments, misc_args = main(*str_args, **kwargs)
-            combined_logger = logger
-            combined_paths.extend(paths)
-            combined_arguments.extend(arguments)
-            combined_misc_args.extend(misc_args)
+        combined_logger = logger
+        combined_paths.extend(paths)
+        combined_arguments.extend(arguments)
+        combined_misc_args.extend(misc_args)
 
-        # Run main() in parallel for non-string arguments
-        if non_str_args:
-            run_main_parallel(non_str_args, test_case_num=test_case_num)
+    for k, v in kwargs.items():
+        if isinstance(v, (tuple, list)):
+            logger, paths, arguments, misc_args = curry_main(*v, **{k: kwargs[k]})
+        else:
+            logger, paths, arguments, misc_args = main(k=v, **kwargs)
 
-    except Exception as e:
-        logging.exception(f"Error in test case {test_case_num}: {e}")
+        combined_logger = logger
+        combined_paths.extend(paths)
+        combined_arguments.extend(arguments)
+        combined_misc_args.extend(misc_args)
 
     return combined_logger, combined_paths, combined_arguments, combined_misc_args
-
-
 def run_main_parallel(args, test_case_num=None):
     """
     Run the main function in parallel for each argument.
@@ -229,8 +223,8 @@ if __name__ == '__main__':
     for idx, test_args in enumerate(test_cases, start=1):
         print(f"Testing case {idx}...")
         logger, created_paths, arguments, misc_args = curry_main(*test_args, test_case_num=idx)
-        print("Logger:", logger)
-        print("Created paths:", created_paths)
+        # print("Logger:", logger)
+        # print("Created paths:", created_paths)
         print("Arguments:", arguments)
         print("Misc Args:", misc_args)
         print()
