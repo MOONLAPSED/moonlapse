@@ -141,6 +141,14 @@ def run_main_parallel(args):
     """
     Run the main function in parallel for each argument.
 
+    This function utilizes Python's multiprocessing to execute the main function
+    concurrently for each provided argument. Each subprocess inherits the logging
+    configuration from the main process, including its root logger. By default,
+    subprocess loggers are named after the entry point function of the process,
+    which in this case is likely to be 'main()'. Therefore, log messages from
+    subprocesses may appear with logger names such as 'main' or 'mp_main',
+    depending on the logging configuration and multiprocessing implementation.
+
     Args:
         args (list): A list of arguments to pass to the main function.
     """
