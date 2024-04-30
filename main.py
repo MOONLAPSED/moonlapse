@@ -6,6 +6,10 @@ import sys
 from pathlib import Path
 import threading
 from typing import List, Tuple, Any, Dict
+import os
+import sys
+import time
+
 
 # Constants and Configuration
 LOGS_DIR = Path(__file__).resolve().parent.joinpath('logs')
@@ -214,8 +218,40 @@ def run_main_parallel(args, test_case_num=None):
     except Exception as e:
         logging.exception(f"Error in test case {test_case_num} parallel execution: {e}")
 
+def wizard() -> None:
+    print(r"""
+                    ____ 
+                  .'* *.'
+               __/_*_*(_
+              / _______ \
+             _\_)/___\(_/_ 
+            / _((\- -/))_ \
+            \ \())(-)(()/ /
+             ' \(((()))/ '
+            / ' \)).))/ ' \
+           / _ \ - | - /_  \
+          (   ( .;''';. .'  )
+          _\"__ /    )\ __"/_
+            \/  \   ' /  \/
+             .'  '...' ' )
+              / /  |  \ \
+             / .   .   . \
+            /   .     .   \
+           /   /   |   \   \
+         .'   /    q    '.  '.
+     _.-'    /     Qq     '-. '-._ 
+ _.-'       |      QQq       '-.  '-. 
+(_________/_|____.qQQQq.________)____)
+    """)
+
+    list(map(lambda char: (print(char, end="", flush=True), time.sleep(0.05)), "Welcome to moonlapse!"))
+
+    print("\n\n")
+
+
 if __name__ == '__main__':
     # Test the main and curry_main functions with different combinations of arguments
+    wizard()
     test_cases = [
         (),
         ("arg1", "arg2",),
