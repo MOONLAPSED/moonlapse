@@ -91,3 +91,49 @@ def function_application(f: Callable[[T], T], x: T) -> T:
 
 def composition(f: Callable[[T], T], g: Callable[[T], T]) -> Callable[[T], T]:
     return lambda x: f(g(x))
+
+def run_tests():
+    print("Testing arithmetic operations:")
+    print("2 + 3 =", addition(2, 3))
+    print("5 - 3 =", subtraction(5, 3))
+    print("2 * 4 =", multiplication(2, 4))
+    print("6 / 3 =", division(6, 3))
+    print("2 ** 3 =", exponentiation(2, 3))
+
+    print("\nTesting arithmetic properties:")
+    print("2 + 3 = 3 + 2 =", commutativity(addition, 2, 3))
+    print("2 + 3 + 4 = 3 + 2 + 4 =", associativity(addition, 2, 3, 4))
+    print("2 * 3 = 3 * 2 =", commutativity(multiplication, 2, 3))
+    print("2 * 3 * 4 = 3 * 2 * 4 =", associativity(multiplication, 2, 3, 4))
+    print("2 * (3 + 4) = (2 * 3) + (2 * 4) =", distributivity(2, 3, 4))
+
+    print("\nTesting ordering and inequalities:")
+    print("2 < 3 =", less_than(2, 3))
+    print("2 <= 3 =", less_than_or_equal_to(2, 3))
+    print("2 > 3 =", greater_than(2, 3))
+    print("2 >= 3 =", greater_than_or_equal_to(2, 3))
+    print("2 < 3 < 4 =", trichotomy(2, 3))
+
+    print("\nTesting limits and infinities:")
+    print("2 < 3 < 4 < 5 =", trichotomy(2, 5))
+
+    print("\nTesting logical foundations:")
+    print("True and True =", and_operator(True, True))
+    print("True and False =", and_operator(True, False))
+    print("True or True =", or_operator(True, True))
+
+    print("\nTesting sets and set operations:")
+    print("set([1, 2, 3]) =", set([1, 2, 3]))
+    print("set([1, 2, 3]) | set([2, 3, 4]) =", set_operations['union'](set([1, 2, 3]), set([2, 3, 4])))
+    print("set([1, 2, 3]) & set([2, 3, 4]) =", set_operations['intersection'](set([1, 2, 3]), set([2, 3, 4])))
+    print("set([1, 2, 3]) - set([2, 3, 4]) =", set_operations['difference'](set([1, 2, 3]), set([2, 3, 4])))
+    print("set([1, 2, 3]) ^ set([2, 3, 4]) =", set_operations['complement'](set([1, 2, 3]), set([2, 3, 4])))
+
+    print("\nTesting functions and relations:")
+    print("function_application(lambda x: x + 1, 2) =", function_application(lambda x: x + 1, 2))
+    print("composition(lambda x: x + 1, lambda x: x * 2) =", composition(lambda x: x + 1, lambda x: x * 2))
+
+    print("\nDone!")
+
+if __name__ == "__main__":
+    run_tests()

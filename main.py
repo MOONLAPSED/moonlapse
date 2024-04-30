@@ -266,3 +266,8 @@ if __name__ == '__main__':
         print("Arguments:", arguments)
         print("Misc Args:", misc_args)
         print()
+
+    from src.base_case.base import run_tests
+    run_tests()
+
+    print("All tests passed!")
