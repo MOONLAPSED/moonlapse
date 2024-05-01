@@ -245,7 +245,7 @@ def wizard() -> None:
     """)
 
     list(map(lambda char: (print(char, end="", flush=True), time.sleep(0.05)), "Welcome to moonlapse!"))
-
+    print("All tests passed!")
     print("\n\n")
 
 
@@ -269,5 +269,3 @@ if __name__ == '__main__':
 
     from src.base_case.base import run_tests
     run_tests()
-
-    print("All tests passed!")
