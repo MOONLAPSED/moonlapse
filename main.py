@@ -292,6 +292,8 @@ if __name__ == '__main__':
         try:
             prompt = Prompt(prompt="Hello, please explain the laws of calculus.")
             response = prompt.generate_response()
+            # custom_output_path = Path("path/to/output/directory/response.json")
+            # response = prompt.generate_response(output_path=custom_output_path)
             print(response)
             print("All tests passed!")
             print("\n")
