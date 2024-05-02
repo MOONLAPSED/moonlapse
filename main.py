@@ -10,9 +10,16 @@ import os
 import sys
 import time
 
-
 # Constants and Configuration
+from src.prompt import Prompt
+from src.ui import generate_response, get_embedding, client
+from tests.test_base import run_tests
 LOGS_DIR = Path(__file__).resolve().parent.joinpath('logs')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(current_dir, 'src')
+tests_dir = os.path.join(current_dir, 'tests')
+sys.path.append(tests_dir)
+sys.path.append(src_dir)
 
 LOGGING_CONFIG = {
     'version': 1,
@@ -47,7 +54,8 @@ LOGGING_CONFIG = {
 
 _lock = threading.Lock()
 
-def _create_paths(*args: str) -> List[Path]:
+
+def _paths(*args: str) -> List[Path]:
     created_paths = []
     try:
         with _lock:
@@ -58,6 +66,7 @@ def _create_paths(*args: str) -> List[Path]:
     except (FileNotFoundError, PermissionError) as e:
         raise Exception(f"Error creating paths: {str(e)}")
     return created_paths
+
 
 def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, List[Path], List[str], List[Any]]:
     """
@@ -114,7 +123,7 @@ def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, L
     LOGS_DIR.mkdir(exist_ok=True)
     logging.config.dictConfig(LOGGING_CONFIG)
 
-    paths = _create_paths("vault", "templates", "output", "logs", "src")
+    paths = _paths("vault", "templates", "output", "logs", "src")
     logger = logging.getLogger(__name__)
     logger.info(f'\n|Source_file: {__file__}||'
                 f'\n|Working_dir: {current_dir}||')
@@ -251,6 +260,7 @@ def wizard() -> None:
 
 if __name__ == '__main__':
     # Test the main and curry_main functions with different combinations of arguments
+    paths = _paths()
     wizard()
     test_cases = [
         (),
@@ -267,5 +277,28 @@ if __name__ == '__main__':
         print("Misc Args:", misc_args)
         print()
 
-    from src.base_case.base import run_tests
     run_tests()
+
+    def main():
+        """
+        Main function to generate a response using the Prompt class.
+
+        This function creates a Prompt instance, generates a response using the instance's generate_response method,
+        and prints the response. It also handles any exceptions that may occur during the process.
+
+        If no exception occurs, it prints a success message. If an exception occurs, it prints the exception message
+        and a message about the client runtime environment not being connected.
+        """
+        try:
+            prompt = Prompt(prompt="Hello, please explain the laws of calculus.")
+            response = prompt.generate_response()
+            print(response)
+            print("All tests passed!")
+            print("\n")
+        except Exception as e:
+            print(f"Error: {e}")
+            print("httpx does not read the server, client runtime environment is configured but not connected.")
+            print("\n")
+
+    if __name__ == "__main__":
+        main()
