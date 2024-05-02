@@ -10,8 +10,8 @@ base_url = os.getenv("OPENAI_BASE_URL", "http://localhost:1234/v1")
 api_key = os.getenv("OPENAI_API_KEY")
 
 # Validate API key (optional)
-if not api_key:
-    raise ValueError("Missing OPENAI_API_KEY environment variable")
+# if not api_key:
+#     raise ValueError("Missing OPENAI_API_KEY environment variable")
 
 client = OpenAI(base_url=base_url, api_key=api_key)
 
