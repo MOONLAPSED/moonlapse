@@ -14,13 +14,8 @@ import time
 from src.prompt import Prompt
 from src.ui import generate_response, get_embedding, client
 from tests.test_base import run_tests
-LOGS_DIR = Path(__file__).resolve().parent.joinpath('logs')
-current_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(current_dir, 'src')
-tests_dir = os.path.join(current_dir, 'tests')
-sys.path.append(tests_dir)
-sys.path.append(src_dir)
 
+# Constants and Configuration
 LOGGING_CONFIG = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -41,8 +36,8 @@ LOGGING_CONFIG = {
             'level': 'INFO',
             'formatter': 'default',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': str(LOGS_DIR / 'app.log'),
-            'maxBytes': 10485760,  # 10MB
+            'filename': os.path.join(logs_dir, 'app.log'),
+            'maxBytes': 10_485_760,   # 10MB
             'backupCount': 10
         }
     },
@@ -117,16 +112,13 @@ def main(*args: Tuple[Any], **kwargs: Dict[str, Any]) -> Tuple[logging.Logger, L
                    permission issues.
 
     """
-    current_dir = Path(__file__).resolve().parent
-    sys.path.append(str(current_dir))
 
-    LOGS_DIR.mkdir(exist_ok=True)
     logging.config.dictConfig(LOGGING_CONFIG)
 
     paths = _paths("vault", "templates", "output", "logs", "src")
     logger = logging.getLogger(__name__)
     logger.info(f'\n|Source_file: {__file__}||'
-                f'\n|Working_dir: {current_dir}||')
+                f'\n|Working_dir: {os.cwd}||')
 
     arguments = [str(_).lower().strip() for _ in sys.argv if len(_) > 0]
     misc_args = []
